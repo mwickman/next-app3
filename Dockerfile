@@ -17,4 +17,4 @@ RUN yarn
 COPY . ./
 RUN yarn build || true
 
-CMD ["yarn", "blah"]
+CMD ["yarn", "start"]
