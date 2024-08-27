@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_PREFIX: registry.cloudzilla.ai/lens-local-mattw-project-3abd407b/
+  IMAGE_PREFIX: registry.cloudzilla.ai/lens-local-mattw-project-ddc74308/
 
 jobs:
   build-push:
@@ -22,7 +22,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: https://registry.cloudzilla.ai/
-          username: 'robot$lens-local-mattw-project-3abd407b+imageuser'
+          username: 'robot$lens-local-mattw-project-ddc74308+imageuser'
           password: '${{ secrets.DOCKER_PASSWORD }}'
 
       - name: downcase REPO
@@ -35,6 +35,10 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE_PREFIX }}${{ env.IMAGE_NAME }}
+      
+      - name: Put down .env file
+        run: |
+          echo "writing .env file..."
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -49,7 +53,7 @@ jobs:
           SECTION_K8S_API_URL: '${{ secrets.SECTION_K8S_API_URL }}'
           SECTION_API_TOKEN: '${{ secrets.SECTION_API_TOKEN }}'
           DOCKER_SERVER: 'registry.cloudzilla.ai'
-          DOCKER_USERNAME: 'robot$lens-local-mattw-project-3abd407b+imageuser'
+          DOCKER_USERNAME: 'robot$lens-local-mattw-project-ddc74308+imageuser'
           DOCKER_PASSWORD: '${{ secrets.DOCKER_PASSWORD }}'
           FULL_IMAGE_WITH_TAG: '${{ env.DOCKER_METADATA_OUTPUT_TAGS }}'
           POD_NAME: '${{ env.IMAGE_NAME }}'
@@ -66,6 +70,7 @@ jobs:
           main() {
             setCluster
 
+            kubectl create secret --from-env-file=${GITHUB_WORKSPACE}/.env console-project-env-secret
             kubectl create secret docker-registry regcred --docker-server="${DOCKER_SERVER}" --docker-username="${DOCKER_USERNAME}" --docker-password="${DOCKER_PASSWORD}" --dry-run=client -o yaml | kubectl apply -f -
             envsubst '$FULL_IMAGE_WITH_TAG $POD_NAME' < ${GITHUB_WORKSPACE}/k8s/deploy.yaml | kubectl apply -f -
             kubectl apply -f ${GITHUB_WORKSPACE}/k8s/ingress-upstream.yaml
