@@ -24,21 +24,21 @@ spec:
           resources:
             limits:
               cpu: 2000m
-              memory: 536870912
+              memory: 2147483648
             requests:
-              cpu: 2000m
-              memory: 536870912
+              cpu: 50m
+              memory: 50Mi
           ports:
-            - containerPort: 3000
+            - containerPort: 3001
           startupProbe:
             tcpSocket:
-              port: 3000
+              port: 3001
             initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 30
           readinessProbe:
             tcpSocket:
-              port: 3000
+              port: 3001
             initialDelaySeconds: 5
             periodSeconds: 5
       imagePullSecrets:
